@@ -1,0 +1,1 @@
+package exam; public class GradingEngine {public int grade(int correct,int total,boolean recorderOnline){if(total<1||correct<0||correct>total)throw new IllegalArgumentException("Invalid answer counts");if(!recorderOnline)throw new IllegalStateException("Transcript recorder offline");return (int)Math.round(100.0*correct/total);}}

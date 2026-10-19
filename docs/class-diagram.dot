@@ -1,0 +1,9 @@
+digraph Facade {
+ graph [rankdir=LR, bgcolor="white", nodesep=0.3, ranksep=0.8];node [shape=record,style="rounded,filled",fillcolor="#eaf2ff",color="#405b7d",fontname="Arial"];
+ Client [label="Main (CLI)"];ExamFacade [fillcolor="#d8f2e5"];AdminFacade [fillcolor="#d8f2e5"];
+ subgraph cluster_a {label="A — Admission";style=rounded;Admission;IdentityVerifier;AdmissionRepository;}
+ subgraph cluster_b {label="B — Monitoring";style=rounded;Monitoring;PlagiarismChecker;MonitoringRepository;}
+ subgraph cluster_c {label="C — Finalization";style=rounded;Finalization;GradingEngine;FinalizationRepository;}
+ Store [fillcolor="#fff1d7",label="Store (SQLite)"];ExamRequest;
+ Client -> ExamFacade;Client -> AdminFacade;Client -> ExamRequest;ExamFacade -> {IdentityVerifier AdmissionRepository PlagiarismChecker MonitoringRepository GradingEngine FinalizationRepository};AdminFacade -> {AdmissionRepository MonitoringRepository FinalizationRepository ExamFacade};AdmissionRepository -> Admission;MonitoringRepository -> Monitoring;FinalizationRepository -> Finalization;AdmissionRepository -> Store;MonitoringRepository -> Store;FinalizationRepository -> Store;ExamFacade -> Store;AdminFacade -> Store;
+}

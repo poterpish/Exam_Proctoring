@@ -1,0 +1,1 @@
+package exam; public class MonitoringRepository {private final Store store;public MonitoringRepository(Store s){store=s;}public void save(Monitoring e){store.put("monitoring",e.id,e.status().name(),e.detail);}public Monitoring find(String id){String[] row=store.get("monitoring",id);return row==null?null:new Monitoring(id,row[1],Monitoring.Status.valueOf(row[0]));}}

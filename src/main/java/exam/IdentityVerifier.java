@@ -1,0 +1,1 @@
+package exam; public class IdentityVerifier {public void check(String id,int minutes){if(id==null||!id.matches("[A-Za-z][A-Za-z0-9_-]{2,29}"))throw new IllegalArgumentException("Invalid student ID");if(minutes<15||minutes>240)throw new IllegalArgumentException("Duration must be 15-240 minutes");}}

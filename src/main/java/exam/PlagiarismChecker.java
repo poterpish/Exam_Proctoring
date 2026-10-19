@@ -1,0 +1,1 @@
+package exam; public class PlagiarismChecker {public void check(int similarity,boolean screenConnected){if(!screenConnected)throw new IllegalStateException("Screen monitor disconnected");if(similarity<0||similarity>100)throw new IllegalArgumentException("Invalid similarity");if(similarity>35)throw new IllegalStateException("Plagiarism detected");}}

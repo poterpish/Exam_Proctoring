@@ -1,0 +1,1 @@
+package exam; public class AdmissionRepository {private final Store store;public AdmissionRepository(Store s){store=s;}public void save(Admission e){store.put("admission",e.id,e.status().name(),e.detail);}public Admission find(String id){String[] row=store.get("admission",id);return row==null?null:new Admission(id,row[1],Admission.Status.valueOf(row[0]));}}

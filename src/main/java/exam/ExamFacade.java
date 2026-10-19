@@ -1,0 +1,11 @@
+package exam;
+public class ExamFacade {
+ private final Store db;private final AdmissionRepository a;private final MonitoringRepository b;private final FinalizationRepository c;
+ public ExamFacade(Store db){this.db=db;a=new AdmissionRepository(db);b=new MonitoringRepository(db);c=new FinalizationRepository(db);}
+ public String start(ExamRequest r){if(r.id()==null||!r.id().matches("[A-Za-z0-9_-]{3,40}"))throw new IllegalArgumentException("Invalid exam ID");if(db.get("workflow",r.id())!=null)throw new IllegalArgumentException("Duplicate exam ID");new IdentityVerifier().check(r.student(),r.minutes());Admission x=new Admission(r.id(),r.student(),Admission.Status.NEW);x.verify();a.save(x);db.put("workflow",r.id(),"PENDING_B","");return resume(r);}
+ public String resume(ExamRequest r){String[] flow=db.get("workflow",r.id());if(flow==null)throw new IllegalArgumentException("Unknown exam");String stage=flow[0];if(stage.equals("COMPLETED")||stage.equals("COMPENSATED"))return stage;
+ try{if(stage.equals("PENDING_B")){new PlagiarismChecker().check(r.similarity(),r.screenConnected());Monitoring x=new Monitoring(r.id(),"similarity="+r.similarity(),Monitoring.Status.READY);x.clear();b.save(x);db.put("workflow",r.id(),"PENDING_C","");stage="PENDING_C";}
+ if(stage.equals("PENDING_C")){int score=new GradingEngine().grade(r.correct(),r.total(),r.recorderOnline());Finalization x=new Finalization(r.id(),"score="+score,Finalization.Status.DRAFT);x.record();c.save(x);db.put("workflow",r.id(),"COMPLETED","");return "COMPLETED";}throw new IllegalStateException("Unknown stage");
+ }catch(RuntimeException ex){compensate(r.id(),ex.getMessage());return "COMPENSATED: "+ex.getMessage();}}
+ public void compensate(String id,String reason){String[] flow=db.get("workflow",id);if(flow==null)throw new IllegalArgumentException("Unknown exam");if(flow[0].equals("COMPENSATED"))return;if(flow[0].equals("COMPLETED"))throw new IllegalStateException("Cannot cancel completed exam");Monitoring x=b.find(id);if(x!=null&&x.status()==Monitoring.Status.CLEARED){x.cancel();b.save(x);}Admission y=a.find(id);if(y!=null&&y.status()==Admission.Status.VERIFIED){y.revoke();a.save(y);}db.put("workflow",id,"COMPENSATED",reason==null?"Manual rollback":reason);}
+}

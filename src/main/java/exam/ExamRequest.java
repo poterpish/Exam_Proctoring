@@ -1,0 +1,1 @@
+package exam; public record ExamRequest(String id,String student,int minutes,int similarity,boolean screenConnected,int correct,int total,boolean recorderOnline) {}
